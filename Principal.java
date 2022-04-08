@@ -35,6 +35,7 @@ public class Principal extends Application { //Inicio da classe principal
   private File fileImgGuerreiro1;
   private File fileImgGuerreiro2;
   private File fileImgGuerreiro3;
+  private File fileImgEspada1;
 
   private ImageView imgFundo;
   private ImageView imgFerreiro1;
@@ -42,6 +43,7 @@ public class Principal extends Application { //Inicio da classe principal
   private ImageView imgGuerreiro1;
   private ImageView imgGuerreiro2;
   private ImageView imgGuerreiro3;
+  private ImageView imgEspada1;
 
   private Button btn;
   //Fim da declaracao de atributos
@@ -102,6 +104,11 @@ public class Principal extends Application { //Inicio da classe principal
     imgGuerreiro3.setX(400);
     imgGuerreiro3.setY(400);
 
+    fileImgEspada1 = new File("/imagens/espada1.png");
+    imgEspada1 = new ImageView(fileImgEspada1.getPath());
+    imgEspada1.setX(397);
+    imgEspada1.setY(410);
+
     btn = new Button("Apertar");
     btn.setLayoutX(300);
     btn.setLayoutY(100);
@@ -119,7 +126,7 @@ public class Principal extends Application { //Inicio da classe principal
     });
 
 
-    root = new Group(imgFundo, imgFerreiro1, imgFerreiro2, btn, imgGuerreiro1, imgGuerreiro2, imgGuerreiro3); //Instanciando atributo root
+    root = new Group(imgFundo, imgFerreiro1, imgFerreiro2, btn, imgGuerreiro1, imgGuerreiro2, imgGuerreiro3, imgEspada1); //Instanciando atributo root
     scene = new Scene(root, 1000, 690, Color.BLACK); //Instanciando atributo scene
   } //Fim do metodo inicializar
 
