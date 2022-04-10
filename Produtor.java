@@ -16,7 +16,6 @@ import javafx.scene.image.ImageView;
 public class Produtor extends Thread { //Inicio da classe Produtor
   //Declarando atributos
   private Buffer buffer;
-  private Group root;
   private ImageView imgFerreiro1;
   private ImageView imgFerreiro2;
   private ImageView imgEspada1;
@@ -40,10 +39,8 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   * Retorno: Sem retorno
   *************************************************************** */
   public Produtor(Buffer buffer, ImageView imgFerreiro1, ImageView imgFerreiro2, ImageView imgEspada1,
-  ImageView imgEspada2, ImageView imgMarchado1, ImageView imgMarchado2, ImageView imgEscudo1, ImageView imgEscudo2,
-  Group root) { //Inicio do metodo Produtor
+  ImageView imgEspada2, ImageView imgMarchado1, ImageView imgMarchado2, ImageView imgEscudo1, ImageView imgEscudo2) { //Inicio do metodo Produtor
     this.buffer = buffer; //Atributo buffer recebe parametro buffer
-    this.root = root; //Atributo root recebe parametro root
     this.imgFerreiro1 = imgFerreiro1; //Atributo imgFerreiro1 recebe parametro imgFerreiro1
     this.imgFerreiro2 = imgFerreiro2; //Atributo imgFerreiro2 recebe parametro imgFerreiro2
     this.imgEspada1 = imgEspada1; //Atributo imgEspada1 recebe parametro imgEspada1
@@ -55,23 +52,36 @@ public class Produtor extends Thread { //Inicio da classe Produtor
     this.valSorteados = new ArrayList<Integer>(6);
   } //Fim do metodo Produtor
 
+  public static boolean comparador(int val, ArrayList<Integer> n) {
+    boolean chave = false;
+    if(n.contains(val)) {
+      chave = true;
+    }
+    return chave;
+  }
+
   /* ***************************************************************
   * Metodo: geradorNum
   * Funcao: Gerar um numero aleatorio entre 1 e 6
   * Parametros: Sem parametros
   * Retorno: valor do tipo inteiro
   *************************************************************** */
-  private int geradorNum() { //Inicio do metodo geradorNum
+  private int geradorNum(ArrayList<Integer> n) { //Inicio do metodo geradorNum
     Random aleatorio = new Random(); //Instancia da classe Random
-    int valor = aleatorio.nextInt(6) + 1; //Atribuindo o numero gerado a variavel valor
-    for(int i = 0; i < this.valSorteados.size(); i++) {
-      if(valor == this.valSorteados.get(i)) {
-          geradorNum();
-      } else {
-        this.valSorteados.add(valor);
+    int valorGerado = aleatorio.nextInt(6) + 1; //Atribuindo o numero gerado a variavel valor
+    int valorFinal = 0;
+    if(n.size() == 0) {
+      n.add(valorGerado);
+      valorFinal = valorGerado;
+    } else {
+      if(comparador(valorGerado, n) == false) {
+        n.add(valorGerado);
+        valorFinal = valorGerado;
       }
-    }    
-    return valor; //Retornando a variavel valor
+    }
+
+    if(valorFinal != 0) return valorFinal;
+    else return geradorNum(n);
   } //Fim do metodo geradorNum
 
   /* ***************************************************************
@@ -82,7 +92,7 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   *************************************************************** */
   private ImageView escolherItem() { //Inicio do metodo escolherItem
     ImageView img; //Declarando variavel do tipo imageView
-    switch(geradorNum()) { //Inicio switch
+    switch(geradorNum(this.valSorteados)) { //Inicio switch
       case 1: //Caso geradorNum retorne 1
         img = this.imgEspada1; //Variavel img recebe imgEspada1
         break; //Parada no switch
@@ -165,13 +175,9 @@ public class Produtor extends Thread { //Inicio da classe Produtor
     }
   } //Fim do metodo produzirItem
 
-  private void inserirItem() {
-    ImageView img = escolherItem();
-    
+  private void inserirItem(ImageView img) {    
     this.buffer.adicionar(img);
-    Platform.runLater(() -> {
-      img.setVisible(true);
-    });
+    img.setVisible(true);
   }
 
   /* ***************************************************************
@@ -181,10 +187,9 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   * Retorno: Sem retorno
   *************************************************************** */
   public void run() { //Inicio do metodo run
-    while(buffer.getTamanho() < 6) {
-      produzirItem(); //Chamada ao metodo produzir item
-      inserirItem();
-      System.out.println(buffer.getTamanho());
+    while(this.buffer.getTamanho() < 6) {
+      produzirItem();
+      inserirItem(escolherItem());
     }
   } //Fim do metodo run
 } //Fim da classe Produtor
