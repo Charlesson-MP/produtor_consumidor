@@ -1,18 +1,18 @@
-import java.util.ArrayList;
-import java.util.Random;
-
-import javafx.application.Platform;
-import javafx.scene.Group;
-import javafx.scene.image.ImageView;
-
 /* ***************************************************************
 * Autor............: Charlesson Mendes Pereira
 * Matricula........: 201710786
 * Inicio...........: 06/04/2022
-* Ultima alteracao.: 09/04/2022
+* Ultima alteracao.: 10/04/2022
 * Nome.............: Produtor-consumidor
 * Funcao...........: Definir as tarefas da classe Produtor
 *************************************************************** */
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.Semaphore;
+
+import javafx.application.Platform;
+import javafx.scene.image.ImageView;
+
 public class Produtor extends Thread { //Inicio da classe Produtor
   //Declarando atributos
   private Buffer buffer;
@@ -24,8 +24,9 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   private ImageView imgMarchado2;
   private ImageView imgEscudo1;
   private ImageView imgEscudo2;
-
-  private ArrayList<Integer> valSorteados;
+  private Semaphore mutex;
+  private Semaphore empty;
+  private Semaphore full;
 
   private int tempoProducao;
   //Fim da declaracao de atributos
@@ -39,7 +40,8 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   * Retorno: Sem retorno
   *************************************************************** */
   public Produtor(Buffer buffer, ImageView imgFerreiro1, ImageView imgFerreiro2, ImageView imgEspada1,
-  ImageView imgEspada2, ImageView imgMarchado1, ImageView imgMarchado2, ImageView imgEscudo1, ImageView imgEscudo2) { //Inicio do metodo Produtor
+  ImageView imgEspada2, ImageView imgMarchado1, ImageView imgMarchado2, ImageView imgEscudo1, ImageView imgEscudo2,
+  Semaphore mutex, Semaphore empty, Semaphore full) { //Inicio do metodo Produtor
     this.buffer = buffer; //Atributo buffer recebe parametro buffer
     this.imgFerreiro1 = imgFerreiro1; //Atributo imgFerreiro1 recebe parametro imgFerreiro1
     this.imgFerreiro2 = imgFerreiro2; //Atributo imgFerreiro2 recebe parametro imgFerreiro2
@@ -49,40 +51,13 @@ public class Produtor extends Thread { //Inicio da classe Produtor
     this.imgMarchado2 = imgMarchado2; //Atributo imgMarchado2 recebe parametro imgMarchado2
     this.imgEscudo1 = imgEscudo1; //Atributo imgEscudo1 recebe parametro imgEscudo1
     this.imgEscudo2 = imgEscudo2; //Atributo imgEscudo2 recebe parametro imgEscudo2
-    this.valSorteados = new ArrayList<Integer>(6);
+    this.tempoProducao = 1;
+    this.mutex = mutex;
+    this.empty = empty;
+    this.full = full;
   } //Fim do metodo Produtor
 
-  public static boolean comparador(int val, ArrayList<Integer> n) {
-    boolean chave = false;
-    if(n.contains(val)) {
-      chave = true;
-    }
-    return chave;
-  }
 
-  /* ***************************************************************
-  * Metodo: geradorNum
-  * Funcao: Gerar um numero aleatorio entre 1 e 6
-  * Parametros: Sem parametros
-  * Retorno: valor do tipo inteiro
-  *************************************************************** */
-  private int geradorNum(ArrayList<Integer> n) { //Inicio do metodo geradorNum
-    Random aleatorio = new Random(); //Instancia da classe Random
-    int valorGerado = aleatorio.nextInt(6) + 1; //Atribuindo o numero gerado a variavel valor
-    int valorFinal = 0;
-    if(n.size() == 0) {
-      n.add(valorGerado);
-      valorFinal = valorGerado;
-    } else {
-      if(comparador(valorGerado, n) == false) {
-        n.add(valorGerado);
-        valorFinal = valorGerado;
-      }
-    }
-
-    if(valorFinal != 0) return valorFinal;
-    else return geradorNum(n);
-  } //Fim do metodo geradorNum
 
   /* ***************************************************************
   * Metodo: escolherItem
@@ -92,7 +67,7 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   *************************************************************** */
   private ImageView escolherItem() { //Inicio do metodo escolherItem
     ImageView img; //Declarando variavel do tipo imageView
-    switch(geradorNum(this.valSorteados)) { //Inicio switch
+    switch(buffer.geradorNum(buffer.getListValSorteados())) { //Inicio switch
       case 1: //Caso geradorNum retorne 1
         img = this.imgEspada1; //Variavel img recebe imgEspada1
         break; //Parada no switch
@@ -120,24 +95,24 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   } //Fim do metodo escolher item
 
   /* ***************************************************************
-  * Metodo: getVelProducao
-  * Funcao: Retornar o valor do atributo velProducao
-  * Parametros: 
-  * Retorno: velProducao do tipo int
+  * Metodo: getTempoProducao
+  * Funcao: Retornar o valor do atributo tempoProducao
+  * Parametros: Sem parametros
+  * Retorno: tempoProducao do tipo int
   *************************************************************** */
-  public int getTempoProducao() { //Inicio do metodo getVelProducao
-    return this.tempoProducao; //Retornando valor do atributo velProducao
-  } //Fim do metodo getVelProducao
+  public int getTempoProducao() { //Inicio do metodo getTempoProducao
+    return this.tempoProducao; //Retornando valor do atributo tempoProducao
+  } //Fim do metodo getTempoProducao
 
   /* ***************************************************************
-  * Metodo: setVelProducao
-  * Funcao: Setar o valor do atributo velProducao
+  * Metodo: setTempoProducao
+  * Funcao: Setar o valor do atributo tempoProducao
   * Parametros: vel do tipo int
   * Retorno: Sem retorno
   *************************************************************** */
-  public void setTempoProducao(int tempo) { //Inicio do metodo setVelProducao
-    this.tempoProducao = tempo; //Retornando valor do atributo velProducao
-  } //Fim do metodo setVelProducao
+  public void setTempoProducao(int tempo) { //Inicio do metodo setTempoProducao
+    this.tempoProducao = tempo; //Atribuindo o valor do parametro tempo ao atributo tempoProducao
+  } //Fim do metodo setTempoProducao
 
   /* ***************************************************************
   * Metodo: produzirItem
@@ -147,7 +122,7 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   *************************************************************** */
   private void produzirItem()  {
     int cont = 0;
-    while(cont < this.tempoProducao/1000) { //Inicio do while
+    while(cont < this.tempoProducao) { //Inicio do while
       if(imgFerreiro1.isVisible()) { //Inicio do if
         Platform.runLater(() -> {
           imgFerreiro1.setVisible(false); //Desabilita visibilidade do atributo imgFerreiro1
@@ -159,14 +134,14 @@ public class Produtor extends Thread { //Inicio da classe Produtor
           imgFerreiro1.setVisible(true); //Habilita visibilidade do atributo imgFerreiro1
         });
       } //Fim if/else
-      System.out.println(cont + " " + this.tempoProducao);
-      cont++; //Incrementa em 1 o valor de count
 
       try { //Inicio do bloco try/catch
         sleep(1000); //Chamada ao metodo sleep
       } catch(InterruptedException e){ //Caso a excecao seja capturada
         e.printStackTrace(); //Mensagem imprimida na pilha
       } //Fim do bloco try/catch
+
+      cont++; //Incrementa em 1 o valor de count
     } //Fim do while
 
     if(imgFerreiro2.isVisible()) {
@@ -176,7 +151,7 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   } //Fim do metodo produzirItem
 
   private void inserirItem(ImageView img) {    
-    this.buffer.adicionar(img);
+    this.buffer.adicionarListImg(img);
     img.setVisible(true);
   }
 
@@ -187,9 +162,18 @@ public class Produtor extends Thread { //Inicio da classe Produtor
   * Retorno: Sem retorno
   *************************************************************** */
   public void run() { //Inicio do metodo run
-    while(this.buffer.getTamanho() < 6) {
+    while(this.buffer.getTamanho() < 6) { //Inicio while
       produzirItem();
+      try {
+        empty.acquire();
+        mutex.acquire();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
       inserirItem(escolherItem());
-    }
+      mutex.release();
+      full.release();
+    } //Fim while
+    System.out.println(this.buffer.getListImg().size() + " " + this.buffer.getListValSorteados().size());
   } //Fim do metodo run
 } //Fim da classe Produtor
