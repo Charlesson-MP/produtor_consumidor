@@ -63,6 +63,15 @@ public class Consumidor extends Thread { //Inicio da classe consumidor
   * Retorno: img do tipo ImageView
   *************************************************************** */
   private ImageView escolherItem(int n) { //Inicio do metodo escolherItem
+    int count = 0;
+    while(count < this.tempoConsumo) {
+      try {
+        sleep(1000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      count++;
+    }
     ImageView img; //Declarando variavel do tipo imageView
     switch(n) { //Inicio switch
       case 1: //Caso geradorNum retorne 1
@@ -144,9 +153,12 @@ public class Consumidor extends Thread { //Inicio da classe consumidor
   }
 
   public ImageView pegarItem(ImageView img) {
-    img.setX(630);
-    img.setY(500);
-    img.setVisible(true);
+    Platform.runLater(() -> {
+      img.setX(630);
+      img.setY(500);
+      img.setVisible(true);
+    });
+    
     return img;
   }
 
@@ -171,20 +183,21 @@ public class Consumidor extends Thread { //Inicio da classe consumidor
   * Retorno: Sem retorno
   *************************************************************** */
   public void run() { //Inicio do metodo run
-    
-    while(this.buffer.getListImg().size() >= 0) {
-      entrarNaLoja(this.imgGuerreiro);
-      try {
-        full.acquire();
-        mutex.acquire();
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }     
-      mutex.release();
-      empty.release();
-      
-      sairDaLoja(this.imgGuerreiro, pegarItem(removerItem(this.buffer)));
+    while(true) {
+      if(full.availablePermits() > 0) {
+        entrarNaLoja(this.imgGuerreiro);
+        try {
+          full.acquire();
+          mutex.acquire();
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }     
+        mutex.release();
+        empty.release();
+        
+        sairDaLoja(this.imgGuerreiro, pegarItem(removerItem(this.buffer)));
+      }
     }
   } //Fim do metodo run
 

@@ -225,8 +225,8 @@ public class Principal extends Application { //Inicio da classe principal
 
     buffer = new Buffer();
 
-    ferreiro = new Produtor(buffer, imgFerreiro1, imgFerreiro2, imgEspada1, imgEspada2, imgMarchado1,
-    imgMarchado2, imgEscudo1, imgEscudo2, mutex, empty, full);
+    ferreiro = new Produtor(root, buffer, imgFerreiro1, imgFerreiro2, fileImgEspada1, fileImgEspada2, fileImgMarchado1,
+    fileImgMarchado2, fileImgEscudo1, fileImgEscudo2, mutex, empty, full);
     
     txtSldFerreiro = new Text(String.format("%02ds", 1));
     txtSldFerreiro.setFont(Font.font("Arial", 30));
@@ -298,7 +298,7 @@ public class Principal extends Application { //Inicio da classe principal
       }      
     });
 
-    guerreiro3 = new Consumidor(buffer, imgGuerreiro2, imgEspada1, imgEspada2, imgMarchado1, imgMarchado2, imgEscudo1, imgEscudo2, mutex, empty, full);
+    guerreiro3 = new Consumidor(buffer, imgGuerreiro3, imgEspada1, imgEspada2, imgMarchado1, imgMarchado2, imgEscudo1, imgEscudo2, mutex, empty, full);
 
     txtSldGuerreiro3 = new Text(String.format("%02ds", 1));
     txtSldGuerreiro3.setFont(Font.font("Arial", 30));
@@ -329,16 +329,15 @@ public class Principal extends Application { //Inicio da classe principal
         @Override
         public void handle(ActionEvent e) {
           ferreiro.start();
-          guerreiro1.start();
-          guerreiro2.start();
-          guerreiro3.start();
+          //guerreiro1.start();
+          //guerreiro2.start();
+          //guerreiro3.start();
         }
     });
 
-    root.getChildren().addAll(imgFundo, imgFerreiro1,imgCorrentes, imgEspada1, imgEspada2, imgMarchado1, imgMarchado2, imgEscudo1, imgEscudo2,
-    imgFerreiro2, btn, imgGuerreiro1, imgGuerreiro2, imgGuerreiro3, crtlFerreiro, crtlGuerreiro1,
-    crtlGuerreiro2, crtlGuerreiro3, txtSldFerreiro, sldFerreiro, txtSldGuerreiro1, sldGuerreiro1, txtSldGuerreiro2,
-    sldGuerreiro2, txtSldGuerreiro3, sldGuerreiro3); //Instanciando atributo root
+    root.getChildren().addAll(imgFundo, imgFerreiro1,imgCorrentes, imgFerreiro2, btn, imgGuerreiro1, imgGuerreiro2,
+    imgGuerreiro3, crtlFerreiro, crtlGuerreiro1, crtlGuerreiro2, crtlGuerreiro3, txtSldFerreiro, sldFerreiro,
+    txtSldGuerreiro1, sldGuerreiro1, txtSldGuerreiro2, sldGuerreiro2, txtSldGuerreiro3, sldGuerreiro3); //Instanciando atributo root
     scene = new Scene(root, 1200, 690, Color.BLACK); //Instanciando atributo scene
   } //Fim do metodo inicializar
 
