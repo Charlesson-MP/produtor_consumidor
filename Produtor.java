@@ -193,7 +193,7 @@ public class Produtor extends Thread { //Inicio da classe Produtor
         mutex.release();
         full.release();
         System.out.println(this.buffer.getListImg().size() + " " + this.buffer.getListValSorteados().size());
-      } //Fim while
-    }
+      }
+    } //Fim while
   } //Fim do metodo run
 } //Fim da classe Produtor

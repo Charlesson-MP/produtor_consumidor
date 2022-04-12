@@ -250,7 +250,7 @@ public class Principal extends Application { //Inicio da classe principal
       }      
     });
 
-    guerreiro1 = new Consumidor(buffer, imgGuerreiro1, imgEspada1, imgEspada2, imgMarchado1, imgMarchado2, imgEscudo1, imgEscudo2, mutex, empty, full);
+    guerreiro1 = new Consumidor(buffer, imgGuerreiro1, mutex, empty, full);
 
     txtSldGuerreiro1 = new Text(String.format("%02ds", 1));
     txtSldGuerreiro1.setFont(Font.font("Arial", 30));
@@ -274,7 +274,7 @@ public class Principal extends Application { //Inicio da classe principal
       }      
     });
 
-    guerreiro2 = new Consumidor(buffer, imgGuerreiro2, imgEspada1, imgEspada2, imgMarchado1, imgMarchado2, imgEscudo1, imgEscudo2, mutex, empty, full);
+    guerreiro2 = new Consumidor(buffer, imgGuerreiro2, mutex, empty, full);
 
     txtSldGuerreiro2 = new Text(String.format("%02ds", 1));
     txtSldGuerreiro2.setFont(Font.font("Arial", 30));
@@ -298,7 +298,7 @@ public class Principal extends Application { //Inicio da classe principal
       }      
     });
 
-    guerreiro3 = new Consumidor(buffer, imgGuerreiro3, imgEspada1, imgEspada2, imgMarchado1, imgMarchado2, imgEscudo1, imgEscudo2, mutex, empty, full);
+    guerreiro3 = new Consumidor(buffer, imgEscudo2, mutex, empty, full);
 
     txtSldGuerreiro3 = new Text(String.format("%02ds", 1));
     txtSldGuerreiro3.setFont(Font.font("Arial", 30));
@@ -329,7 +329,7 @@ public class Principal extends Application { //Inicio da classe principal
         @Override
         public void handle(ActionEvent e) {
           ferreiro.start();
-          //guerreiro1.start();
+          guerreiro1.start();
           //guerreiro2.start();
           //guerreiro3.start();
         }
